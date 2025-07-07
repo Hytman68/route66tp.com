@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Mi Juego de Ruta 66</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; background: #333; }
+    /* Opcional: estilos básicos para los botones del overlay */
+    #qnOverlay button {
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="canvas" width="800" height="600"
+          style="border:1px solid #d3d3d3;">
+    Your browser does not support the HTML5 canvas tag.
+  </canvas>
+
+  <!-- Librerías y módulos del juego -->
+  <script src="util.js"></script>
+  <script src="gameConfig.js"></script>
+  <script src="levelController.js"></script>
+  <script src="collisionDetection.js"></script>
+  <script src="obstacle.js"></script>
+  <script src="car.js"></script>
+  <script src="traffic.js"></script>
+  <script src="tree.js"></script>
+  <script src="scenario.js"></script>
+  <script src="score.js"></script>
+
+  <!-- Gestor de preguntas y HUD -->
+  <script src="questionManager.js"></script>
+  <!-- Lógica principal del juego -->
+  <script src="game.js"></script>
+
+  <!-- Inicialización y bucle de animación -->
+  <script>
+    // Inicializa el juego
+    Game.initialize();
+
+    // Función principal de actualización/dibujo
+    Game.run = (function() {
+      var loops = 0;
+      var nextGameTick = Date.now();
+      return function() {
+        loops = 0;
+        // Actualiza tantas veces como sea necesario
+        while (Date.now() > nextGameTick) {
+          Game.update();
+          nextGameTick += Game.skipTicks;
+          loops++;
+        }
+        // Dibuja la escena
+        Game.draw();
+      };
+    })();
+
+    // Polyfill requestAnimationFrame
+    (function() {
+      var onEachFrame;
+      if (window.requestAnimationFrame) {
+        onEachFrame = function(cb) {
+          var _cb = function() {
+            cb();
+            requestAnimationFrame(_cb);
+          };
+          _cb();
+        };
+      } else {
+        onEachFrame = function(cb) {
+          setInterval(cb, 1000 / 60);
+        };
+      }
+      window.onEachFrame = onEachFrame;
+    })();
+
+    // Arranca el bucle
+    window.onEachFrame(Game.run);
+  </script>
+
+</body>
+</html>
